@@ -8,20 +8,30 @@ public class Hello {
 
         Scanner sc = new Scanner(System.in);
         String username = sc.nextLine();
+        getUserByUsername(username);
+    }
 
-        String password = "123456"; // issue
+        public static void getUserByUsername(String username) {
+        String query = "SELECT * FROM users WHERE username = ?"; // gunakan placeholder ?
 
-        String query = "SELECT * FROM users WHERE username = '" + username + "'"; // SQL injection
+        try (Connection conn = DriverManager.getConnection(
+                "jdbc:postgresql://postgres:5432/sonarqube",
+                "sonar",
+                "sonar123");
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-        Connection conn = DriverManager.getConnection(
-            "jdbc:postgresql://postgres:5432/sonarqube",
-            "sonar",
-            "sonar123"
-        );
+            // set parameter
+            pstmt.setString(1, username);
 
-        Statement stmt = conn.createStatement();
-        stmt.executeQuery(query);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println("User: " + rs.getString("username"));
+                    // Ambil field lain sesuai kebutuhan
+                }
+            }
 
-        System.out.println(password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
