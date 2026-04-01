@@ -29,9 +29,7 @@ public class Hello {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    System.out.println("User: " + rs.getString("username"));
                     log.error(rs.getString("username"));
-
                 }
             }
 
